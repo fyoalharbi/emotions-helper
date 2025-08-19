@@ -8,7 +8,9 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import "./welcome/LetterGlitch";
 import "./app.css";
+import "./welcome/ScrollReveal";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
