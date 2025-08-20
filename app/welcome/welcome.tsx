@@ -5,7 +5,7 @@ import NeonButton from './NeonButton';
 
 
 const emotionData = {
-  خوف: {
+  الخوف: {
     level2: {
       فزع: ["عاجز", "خائف"],
       قلق: ["مرتبك", "مضطرب البال"], 
@@ -15,7 +15,7 @@ const emotionData = {
       تهديد: ["متوتر", "مكشوف"]
     }
   },
-  غضب: {
+  الغضب: {
     level2: {
       خذلان: ["خيانة", "مستاء"],
       إذلال: ["اضطهاد", "سخرية"],
@@ -27,7 +27,7 @@ const emotionData = {
       إحراج: ["متشكك", "رافض"]
     }
   },
-  "إشمئزاز": {
+  الإشمئزاز: {
     level2: {
       رافض: ["سريع الحكم", "منزعج"],
       "خائب الأمل": ["مروع", "ثار"], 
@@ -60,9 +60,10 @@ const emotionData = {
   },
   "المفاجأة": {
     level2: {
-      دهشة: ["انبهار", "إعجاب", "تعجب"],
-      حيرة: ["ارتباك", "تشويش", "لبس"],
-      انتباه: ["يقظة", "تركيز", "وعي"]
+      مذهول: ["انبهار", "إعجاب", "تعجب"],
+      مشتكك: ["ارتباك", "تشويش", "لبس"],
+      مندهش: ["رهبة","مندهشة"],
+      متحمس: ["نشيط","متلهف"],
     }
   },
   "السوء": {
@@ -83,7 +84,7 @@ export function Welcome() {
   const [currentEmotion, setCurrentEmotion] = useState(null);
   const [currentLevel2, setCurrentLevel2] = useState(null);
   const [selectedPath, setSelectedPath] = useState([]);
-
+  const [selectLevel3, setSelectedLevel3] = useState(0)
   const handleYesClick = () => {
     setYesattempts(prev => prev + 1);
     if((yesattempts == 0 && attempts == 0) || (yesattempts == 0 && attempts < 5)){
@@ -108,8 +109,8 @@ export function Welcome() {
     setSelectedPath([...selectedPath, level2Emotion]);
   };
 
-  const handleLevel3Click = (level3Emotion) => {
-    setSelectedPath([...selectedPath, level3Emotion]);
+  const handleLevel3Click = () => {
+    setSelectedLevel3(prev => prev + 1);
     // Here you could show a final screen or handle the complete selection
   };
 
@@ -173,13 +174,79 @@ export function Welcome() {
             حدد بدقة أكثر
           </h1>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6 max-w-4xl">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6 max-w-4xl">
             {level3Emotions.map((emotion, index) => (
-              <NeonButton key={index} onClick={() => handleLevel3Click(emotion)}>
+              <NeonButton key={index} onClick={() => handleLevel3Click()
+                
+              }>
                 {emotion}
               </NeonButton>
             ))}
           </div>
+          {
+          selectLevel3 == 1 &&(
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
+               style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
+            <p className="text-lg">الله يعينك أو يزيدك ما حطيت حاجة تشوف ايش اخترت</p>
+          </div>
+        )}
+        {
+          selectLevel3 == 2 &&(
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
+               style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
+            <p className="text-lg">خلاص ما فيه شيء اكثر والله</p>
+          </div>
+        )}
+        {
+          selectLevel3 == 3 &&(
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
+               style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
+            <p className="text-lg">ترا بهكر جهازك</p>
+          </div>
+        )}
+        {
+          selectLevel3 == 10 &&(
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
+               style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
+            <p className="text-lg">فكرة الموقع ما خلتني انام</p>
+          </div>
+        )}
+
+{
+          selectLevel3 == 15 &&(
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
+               style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
+            <p className="text-lg">تحسب بقول شيء اكثر؟ اضغط الين تصير 100 عدة</p>
+          </div>
+        )}
+        {
+          selectLevel3 > 15 && selectLevel3 < 100 &&(
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
+               style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
+            <p className="text-lg">{selectLevel3}</p>
+          </div>
+        )}
+        {
+          selectLevel3 == 100 &&(
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
+               style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
+            <p className="text-lg">اتمنى تصمل على اشياء ثانية بحياتك نفس صملتك هنا</p>
+          </div>
+        )}
+        {
+          selectLevel3 == 101 &&(
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
+               style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
+            <p className="text-lg">الله يشفيك</p>
+          </div>
+        )}
+        {
+          selectLevel3 >= 102 &&(
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
+               style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
+            <p className="text-lg">aheleles ahlelas</p>
+          </div>
+        )}
         </div>
       </div>
     );
