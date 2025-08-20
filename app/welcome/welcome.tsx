@@ -84,15 +84,20 @@ export function Welcome() {
   const [currentEmotion, setCurrentEmotion] = useState(null);
   const [currentLevel2, setCurrentLevel2] = useState(null);
   const [selectedPath, setSelectedPath] = useState([]);
-  const [selectLevel3, setSelectedLevel3] = useState(0)
+  const [selectLevel3, setSelectedLevel3] = useState(0);
+
   const handleYesClick = () => {
-    setYesattempts(prev => prev + 1);
-    if((yesattempts == 0 && attempts == 0) || (yesattempts == 0 && attempts < 5)){
-      setShowEmotions(true);
-    }
-    else if(yesattempts == 2){
-      setShowEmotions(true);
-    }
+    setYesattempts(prevYes => {
+      const newYes = prevYes + 1;
+  
+      if ((newYes === 1 || newYes === 2) && attempts >= 6) {
+        setShowEmotions(false);
+      } else if ((newYes >= 2 && attempts >= 5) || (newYes === 1 && attempts <= 5)) {
+        setShowEmotions(true);
+      }
+  
+      return newYes;
+    });
   };
 
   const handleNoattempts = () => {
@@ -398,18 +403,19 @@ export function Welcome() {
             <p className="text-lg">عطني فرصة</p>
           </div>
         )}
-        {attempts >= 6 && yesattempts === 1 && (
+        {attempts === 6 && yesattempts === 1 && (
           <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
                style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
             <p className="text-lg">غصباً عنك</p>
           </div>
         )}
-        {attempts >= 6 && yesattempts === 2 && (
+        {attempts === 6 && yesattempts === 2 && (
           <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
                style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
             <p className="text-lg">:P</p>
           </div>
-        )}
+        ) }
+        
       </div>
     </div>
   );
