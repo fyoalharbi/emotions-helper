@@ -5,8 +5,7 @@ import { ServerRouter, UNSAFE_withComponentProps, Outlet, UNSAFE_withErrorBounda
 import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 import { useRef, useEffect, useState } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger.js";
+
 const streamTimeout = 5e3;
 function handleRequest(request, responseStatusCode, responseHeaders, routerContext, loadContext) {
   return new Promise((resolve, reject) => {
@@ -284,7 +283,7 @@ const LetterGlitch = ({
     )
   ] });
 };
-gsap.registerPlugin(ScrollTrigger);
+
 const links = () => [{
   rel: "preconnect",
   href: "https://fonts.googleapis.com"
