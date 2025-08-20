@@ -1,33 +1,352 @@
-
+import React, { useState, useEffect } from 'react';
 import LetterGlitch from './LetterGlitch';
-import ScrollReveal from './ScrollReveal';
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Kufi+Arabic:wght@100..900&family=Noto+Sans+Arabic:wght@100..900&display=swap');
-</style>
+import NeonButton from './NeonButton';
+
+
+
+const emotionData = {
+  خوف: {
+    level2: {
+      فزع: ["عاجز", "خائف"],
+      قلق: ["مرتبك", "مضطرب البال"], 
+      "غير آمن": ["غير كافي", "دوني"],
+      ضعف: ["غير كافي", "عديم الأهمية"],
+      رفض: ["مستبعد", "مضطهد", "انكماش"],
+      تهديد: ["متوتر", "مكشوف"]
+    }
+  },
+  غضب: {
+    level2: {
+      خذلان: ["خيانة", "مستاء"],
+      إذلال: ["اضطهاد", "سخرية"],
+      حقد: ["ناقم", "انتهك"],
+      غاضب: ["محتد", "غيور"],
+      عدوانية: ["استفزاز", "شراسة"],
+      احباط: ["محتد", "منزعج"],
+      متباعد: ["منسحب", "فاقد الإحساس"],
+      إحراج: ["متشكك", "رافض"]
+    }
+  },
+  "إشمئزاز": {
+    level2: {
+      رافض: ["سريع الحكم", "منزعج"],
+      "خائب الأمل": ["مروع", "ثار"], 
+      فظيع: ["مشمئز", "كريه"], 
+      نفور: ["هلع", "متردد"]
+    }
+  },
+  الحزن: {
+    level2: {
+      مجروح: ["منحرج", "مخيب"],
+      اكتئاب: ["متدني", "خالي من المشاعر"],
+      مذنب: [ "خجول", "ندامة"],
+      يائس: ["عاجز", "حزين"], 
+      ضعيف: ["هش", "ضحية"],
+      وحيد: ["تخلى عنه", "معزول"]
+    }
+  },
+  السعادة: {
+    level2: {
+      مرح: ["ثائر", "نبيه"],
+      قنوع: ["حر", "مبتهج"],
+      مهتم: ["فضولي", "متسائل"],
+      فخور: ["ناجح", "واثق",],
+      مقبول: ["محترم", "قيّم"],
+      قوي: ["شجاع", "إبداعي"],
+      مسالم: ["محب", "شاكر"],
+      واثق: ["حساس", "ودود"], 
+      متفائل: ["متفائل","ملهم"]
+    }
+  },
+  "المفاجأة": {
+    level2: {
+      دهشة: ["انبهار", "إعجاب", "تعجب"],
+      حيرة: ["ارتباك", "تشويش", "لبس"],
+      انتباه: ["يقظة", "تركيز", "وعي"]
+    }
+  },
+  "السوء": {
+    level2: {
+      ذنب: ["ندم", "تأنيب", "لوم"],
+      عار: ["خزي", "إذلال", "فضيحة"],
+      كراهية: ["بغض", "حقد", "ضغينة"]
+    }
+  }
+};
+    
+
 export function Welcome() {
+  const [noButtonPosition, setNoButtonPosition] = useState({ x: 70, y: 70 });
+  const [attempts, setAttempts] = useState(0);
+  const [yesattempts, setYesattempts] = useState(0);
+  const [showEmotions, setShowEmotions] = useState(false);
+  const [currentEmotion, setCurrentEmotion] = useState(null);
+  const [currentLevel2, setCurrentLevel2] = useState(null);
+  const [selectedPath, setSelectedPath] = useState([]);
+
+  const handleYesClick = () => {
+    setYesattempts(prev => prev + 1);
+    if((yesattempts == 0 && attempts == 0) || (yesattempts == 0 && attempts < 5)){
+      setShowEmotions(true);
+    }
+    else if(yesattempts == 2){
+      setShowEmotions(true);
+    }
+  };
+
+  const handleNoattempts = () => {
+    setAttempts(prev => prev + 1);
+  };
+
+  const handleEmotionClick = (emotion) => {
+    setCurrentEmotion(emotion);
+    setSelectedPath([emotion]);
+  };
+
+  const handleLevel2Click = (level2Emotion) => {
+    setCurrentLevel2(level2Emotion);
+    setSelectedPath([...selectedPath, level2Emotion]);
+  };
+
+  const handleLevel3Click = (level3Emotion) => {
+    setSelectedPath([...selectedPath, level3Emotion]);
+    // Here you could show a final screen or handle the complete selection
+  };
+
+  const handleBack = () => {
+    if (selectedPath.length === 3) {
+      // From level 3 back to level 2
+      setSelectedPath([selectedPath[0], selectedPath[1]]);
+    } else if (selectedPath.length === 2) {
+      // From level 2 back to level 1
+      setCurrentLevel2(null);
+      setSelectedPath([selectedPath[0]]);
+      setCurrentEmotion(selectedPath[0]);
+    } else if (selectedPath.length === 1) {
+      // From level 1 back to main emotions
+      setCurrentEmotion(null);
+      setSelectedPath([]);
+    }
+  };
+
+  const pixelButtonStyle = {
+    imageRendering: 'pixelated',
+    border: '3px solid #000',
+    borderRadius: '0',
+    boxShadow: '4px 4px 0px #000, inset -2px -2px 0px rgba(0,0,0,0.3)',
+    fontFamily: 'monospace',
+    textShadow: '1px 1px 0px #000'
+  };
+
+  // Show level 3 emotions
+  if (selectedPath.length === 2 && currentEmotion && currentLevel2) {
+    const level3Emotions = emotionData[currentEmotion]?.level2[currentLevel2] || [];
+    
+    return (
+      <div className="relative min-h-screen overflow-hidden" style={{fontFamily: 'Noto Kufi Arabic, sans-serif'}}>
+        <div className="absolute inset-0 z-0">
+          <LetterGlitch
+            glitchSpeed={50}
+            centerVignette={true}
+            outerVignette={false}
+            smooth={true}
+            glitchColors={["#2d2d32","#581c87", "#581c87"]}
+          />
+        </div>
+        
+        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-8">
+          <div className="mb-4">
+            <button 
+              onClick={handleBack}
+              className="text-white hover:text-purple-300 transition-colors"
+            >
+              ← العودة
+            </button>
+          </div>
+          
+          <div className="text-center mb-8">
+            <p className="text-white text-lg mb-2">المشاعر المحددة:</p>
+            <p className="text-purple-300 text-md">{selectedPath.join(' → ')}</p>
+          </div>
+          
+          <h1 className="text-[clamp(1.5rem,4vw,6rem)] text-white font-bold text-center mb-16">
+            حدد بدقة أكثر
+          </h1>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6 max-w-4xl">
+            {level3Emotions.map((emotion, index) => (
+              <NeonButton key={index} onClick={() => handleLevel3Click(emotion)}>
+                {emotion}
+              </NeonButton>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show level 2 emotions
+  if (currentEmotion && emotionData[currentEmotion]) {
+    const level2Emotions = Object.keys(emotionData[currentEmotion].level2);
+    
+    return (
+      <div className="relative min-h-screen overflow-hidden" style={{fontFamily: 'Noto Kufi Arabic, sans-serif'}}>
+        <div className="absolute inset-0 z-0">
+          <LetterGlitch
+            glitchSpeed={50}
+            centerVignette={true}
+            outerVignette={false}
+            smooth={true}
+            glitchColors={["#2d2d32","#581c87", "#581c87"]}
+          />
+        </div>
+        
+        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-8">
+          <div className="mb-4">
+            <button 
+              onClick={handleBack}
+              className="text-white hover:text-purple-300 transition-colors"
+            >
+              ← العودة
+            </button>
+          </div>
+          
+          <div className="text-center mb-8">
+            <p className="text-white text-lg mb-2">اخترت:</p>
+            <p className="text-purple-300 text-xl font-bold">{currentEmotion}</p>
+          </div>
+          
+          <h1 className="text-[clamp(1.5rem,4vw,6rem)] text-white font-bold text-center mb-16">
+            وش نوع {currentEmotion} اللي تحس فيه؟
+          </h1>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-4xl">
+            {level2Emotions.map((emotion, index) => (
+              <NeonButton key={index} onClick={() => handleLevel2Click(emotion)}>
+                {emotion}
+              </NeonButton>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show main emotions (level 1)
+  if (showEmotions) {
+    return (
+      <div className="relative min-h-screen overflow-hidden" style={{fontFamily: 'Noto Kufi Arabic, sans-serif'}}>
+        <div className="absolute inset-0 z-0">
+          <LetterGlitch
+            glitchSpeed={50}
+            centerVignette={true}
+            outerVignette={false}
+            smooth={true}
+            glitchColors={["#2d2d32","#581c87", "#581c87"]}
+          />
+        </div>
+        
+        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-8">
+          <h1 className="text-[clamp(1.5rem,4vw,6rem)] text-white font-bold text-center mb-16">
+            وش تحس فيه؟
+          </h1>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6 max-w-4xl">
+            {Object.keys(emotionData).map((emotion, index) => (
+              <NeonButton key={index} onClick={() => handleEmotionClick(emotion)}>
+                {emotion}
+              </NeonButton>
+            ))}
+          </div>
+        </div>
+        
+        <style jsx>{`
+          @keyframes float {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) translateY(-100px) scale(1.5); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // Initial screen
   return (
-    <div className="relative">
-      {/* Fixed LetterGlitch background - stays in place */}
-      <div className="relative inset-0 z-0">
+    <div className="relative min-h-screen overflow-hidden" style={{fontFamily: 'Noto Kufi Arabic, sans-serif'}}>
+      <div className="absolute inset-0 z-0">
         <LetterGlitch
           glitchSpeed={50}
           centerVignette={true}
           outerVignette={false}
-          smooth={true} 
+          smooth={true}
           glitchColors={["#2d2d32","#581c87", "#581c87"]}
         />
-        <div className="absolute top-0 left-0 w-screen h-screen flex items-center justify-center p-8">
-          <h6>ما تعرف تعبر عن مشاعرك؟</h6>
-        </div>
-        
       </div>
       
- 
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-8">
+        <h1 className="text-[clamp(2rem,5vw,8rem)] text-white font-bold leading-tight text-center mb-16">
+          ما تعرف تعبر عن مشاعرك؟
+        </h1>
         
+        <div className="flex gap-8 items-center">
+          <NeonButton onClick={handleYesClick}>
+            ايه :(
+          </NeonButton>
+          
+          <NeonButton 
+            onClick={handleNoattempts}
+            className="bg-red-600 hover:bg-red-700 text-white text-3xl px-12 py-6 font-bold transition-all duration-300 cursor-pointer select-none"
+          >
+            الا
+          </NeonButton>
+        </div>
+        
+        {attempts === 1 && (
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
+               style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
+            <p className="text-lg">على مين؟</p>
+          </div>
+        )}
+        {attempts === 2 && (
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
+               style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
+            <p className="text-lg">لا نكذب على بعض</p>
+          </div>
+        )}
+        {attempts === 3 && (
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
+               style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
+            <p className="text-lg">بس يا حح</p>
+          </div>
+        )}
+        {attempts === 4 && (
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
+               style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
+            <p className="text-lg">خل اساعدك طيب</p>
+          </div>
+        )}
+        {attempts === 5 && (
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
+               style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
+            <p className="text-lg">عطني فرصة</p>
+          </div>
+        )}
+        {attempts >= 6 && yesattempts === 1 && (
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
+               style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
+            <p className="text-lg">غصباً عنك</p>
+          </div>
+        )}
+        {attempts >= 6 && yesattempts === 2 && (
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white text-center p-4 rounded backdrop-blur" 
+               style={{...pixelButtonStyle, backgroundColor: 'rgba(0,0,0,0.7)', border: '2px solid #fff'}}>
+            <p className="text-lg">:P</p>
+          </div>
+        )}
       </div>
+    </div>
   );
 }
-
 const resources = [
   {
     href: "https://reactrouter.com/docs",
